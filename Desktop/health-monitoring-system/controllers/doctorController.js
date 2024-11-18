@@ -42,52 +42,27 @@ exports.viewPatients = async (req, res) => {
 
 exports.viewPatientProfile = async (req, res) => {
   try {
-    const patientId = req.params.id;  // Отримуємо ID пацієнта з параметра URL
+    const patientId = req.params.id;
 
-    // Логування ID пацієнта
-    console.log("Received Patient ID from URL:", patientId);
-
-    // Перевірка на валідність ObjectId
     if (!ObjectId.isValid(patientId)) {
       return res.status(400).json({ message: 'Невірний формат ID пацієнта' });
     }
 
-    // Пошук пацієнта по ID
-    const patient = await User.findById(patientId); 
+    const patient = await User.findById(patientId);
 
-    // Якщо пацієнта не знайдено або роль не пацієнт
     if (!patient || patient.role !== 'patient') {
       return res.status(404).json({ message: 'Пацієнт не знайдений' });
     }
 
-    // Логування даних пацієнта
-    console.log('Patient found:', patient);
+    const medicalRecords = await MedicalRecord.find({ user: patient._id });
 
-    // Отримуємо медичну картку пацієнта
-    let medicalRecord = await MedicalRecord.findOne({ user: patient._id });
-
-    // Якщо медичну картку не знайдено, перевіряємо, чи потрібно створити нову
-    if (!medicalRecord && req.query.createRecord === 'true') {
-      // Створюємо нову медичну картку
-      medicalRecord = new MedicalRecord({
-        user: patient._id,
-        // Вказуємо інші значення за замовчуванням, якщо потрібно
-        diagnosis: 'Не вказано',
-        treatment: 'Не вказано',
-      });
-
-      await medicalRecord.save();
-      console.log('New medical record created:', medicalRecord);
-      return res.status(201).json({ message: 'Медична картка створена', medicalRecord });
-    }
-
-    // Якщо медична картка знайдена, повертаємо дані пацієнта та медичної картки
-    res.json({ patient, medicalRecord });
+    res.json({ patient, medicalRecords });
   } catch (error) {
     console.error('Error while fetching patient profile:', error);
     res.status(500).json({ message: 'Помилка при отриманні профілю пацієнта', error });
   }
 };
+
 
 
 
@@ -129,22 +104,75 @@ exports.createMedicalRecord = async (req, res) => {
   try {
     const { diagnoses, treatments, surgeries, healthComplaints, vaccinations } = req.body;
 
-    const record = new MedicalRecord({
-      user: req.params.id,
-      diagnoses,
-      treatments,
-      surgeries,
-      healthComplaints,
-      vaccinations,
-      doctorComments: [`Запис створено лікарем ${req.user.fullName}`],
-    });
+    // Логування для перевірки вхідних даних
+    console.log("Шукаємо медичний запис для користувача з ID:", req.params.id);
 
-    await record.save();
-    res.status(201).json({ message: 'Запис успішно створено', record });
+    // Знайти існуючу медичну картку пацієнта за ID користувача
+    let record = await MedicalRecord.findOne({ user: req.params.id });
+
+    // Логування результатів пошуку
+    console.log("Знайдений запис:", record);
+
+    // Логування для перевірки інформації про лікаря
+    if (req.user) {
+      console.log("Інформація про лікаря:", req.user.fullName);
+    } else {
+      console.log("Інформація про лікаря не знайдена в `req.user`");
+    }
+
+    // Перевіряємо, чи існує лікар та його повне ім'я
+    const doctorName = req.user && req.user.fullName ? req.user.fullName : 'Лікар (ім\'я не знайдено)';
+
+    if (record) {
+      // Якщо медичний запис знайдено, додаємо нові значення до масивів
+      if (diagnoses) {
+        record.diagnoses.push(diagnoses);
+      }
+      if (treatments) {
+        record.treatments.push(treatments);
+      }
+      if (surgeries) {
+        record.surgeries.push(surgeries);
+      }
+      if (healthComplaints) {
+        record.healthComplaints.push(healthComplaints);
+      }
+      if (vaccinations) {
+        record.vaccinations.push(vaccinations);
+      }
+
+      // Додаємо новий коментар лікаря, використовуючи `req.user.fullName`
+      record.doctorComments.push(`Запис створено лікарем ${doctorName}`);
+
+      // Зберегти оновлений запис
+      await record.save();
+      res.status(200).json({ message: 'Запис успішно оновлено', record });
+    } else {
+      // Якщо запис не знайдено, створюємо новий
+      record = new MedicalRecord({
+        user: req.params.id,
+        diagnoses: diagnoses ? [diagnoses] : [],
+        treatments: treatments ? [treatments] : [],
+        surgeries: surgeries ? [surgeries] : [],
+        healthComplaints: healthComplaints ? [healthComplaints] : [],
+        vaccinations: vaccinations ? [vaccinations] : [],
+        doctorComments: [`Запис створено лікарем ${doctorName}`]
+      });
+
+      await record.save();
+      res.status(201).json({ message: 'Новий медичний запис створено', record });
+    }
+
   } catch (error) {
-    res.status(500).json({ message: 'Помилка при створенні запису', error });
+    console.error('Помилка при створенні або оновленні запису:', error);
+    res.status(500).json({ message: 'Помилка при створенні або оновленні запису', error });
   }
 };
+
+
+
+
+
 
 
 

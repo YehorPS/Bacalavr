@@ -14,6 +14,7 @@
       <img id="patientPhoto" src="/default-photo.jpg" alt="Фото пацієнта" width="150">
       <p>Email: <span id="patientEmail"></span></p>
       <p>Телефон: <span id="patientPhone"></span></p>
+      <p>Дата народження: <span id="patientDOB"></span></p>
       <p>Звання: <span id="patientRank"></span></p>
 
       <!-- Кнопка для редагування профілю -->
@@ -35,24 +36,47 @@
     <button onclick="window.location.href='/login.html'">Вихід</button>
   </div>
 
-  <!-- Модальне вікно для редагування профілю -->
-  <div id="editProfileModal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn">&times;</span>
-      <h2>Редагувати профіль</h2>
-      <form id="editProfileForm">
-        <label for="editEmail">Email:</label>
-        <input type="email" id="editEmail">
-        <label for="editPhone">Телефон:</label>
-        <input type="text" id="editPhone">
-        <label for="editRank">Звання:</label>
-        <input type="text" id="editRank">
-        <label for="photoInput">Фото:</label>
-        <input type="file" id="photoInput">
-        <button type="submit">Зберегти зміни</button>
-      </form>
-    </div>
+ <!-- Модальне вікно для редагування профілю -->
+<div id="editProfileModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+    <h2>Редагувати профіль</h2>
+    <form id="editProfileForm">
+      <label for="editFullName">Повне ім'я:</label>
+      <input type="text" id="editFullName">
+      <label for="editPhone">Телефон:</label>
+      <input type="text" id="editPhone">
+      <label for="editDOB">Дата народження:</label>
+      <input type="date" id="editDOB">
+      <label for="editRank">Звання:</label>
+      <input type="text" id="editRank">
+      <label for="photoInput">Фото:</label>
+      <input type="file" id="photoInput">
+      <button type="submit">Зберегти зміни</button>
+    </form>
   </div>
+</div>
+
+ <!-- Модальне вікно для створення профілю пацієнта -->
+<div id="createProfileModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn create-close-btn">&times;</span>
+    <h2>Створити профіль</h2>
+    <form id="createProfileForm">
+      <label for="createFullName">ПІБ:</label>
+      <input type="text" id="createFullName" required>
+      <label for="createPhone">Телефон:</label>
+      <input type="text" id="createPhone" required>
+      <label for="createDOB">Дата народження:</label>
+      <input type="date" id="createDOB" required>
+      <label for="createRank">Звання:</label>
+      <input type="text" id="createRank">
+      <label for="createPhotoInput">Фото:</label>
+      <input type="file" id="createPhotoInput">
+      <button type="submit">Зберегти зміни</button>
+    </form>
+  </div>
+</div>
 
   <script src="js/patient-dashboard.js"></script>
 </body>

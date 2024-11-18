@@ -1,46 +1,54 @@
+let medicalRecordsLoaded = false; // Флаг, що показує, чи таблиця вже була заповнена
+
 window.onload = async () => {
+  await loadPatientData(); // Завантажуємо дані про пацієнта
+};
+
+// Завантаження інформації про пацієнта і його медичні записи
+async function loadPatientData() {
   const token = localStorage.getItem('authToken');
   if (!token) {
-    window.location.href = '/login.html';  // Якщо токен не знайдено, перенаправляємо на сторінку входу
+    window.location.href = '/login.html';
     return;
   }
 
   // Отримуємо ID пацієнта з параметра URL
   const urlParams = new URLSearchParams(window.location.search);
-  const patientId = urlParams.get('id');  // Отримуємо ID пацієнта з параметра URL
-  console.log("Patient ID from URL:", patientId);  // Логування ID пацієнта
+  const patientId = urlParams.get('id');
 
-  // Отримуємо інформацію про пацієнта
-  const response = await fetch(`/api/doctor/patient/${patientId}`, {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
+  try {
+    // Отримуємо інформацію про пацієнта разом із медичними записами
+    const response = await fetch(`/api/doctor/patient/${patientId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
 
-  const data = await response.json();
-  console.log("Patient Data:", data);  // Логування отриманих даних
-  if (response.ok) {
-    // Оновлюємо дані на сторінці
-    document.getElementById('patientName').textContent = data.patient.fullName;
-    document.getElementById('patientEmail').textContent = data.patient.email;
-    document.getElementById('patientPhone').textContent = data.patient.phone || 'Не вказано';
-    document.getElementById('patientPhoto').src = data.patient.photo || '/default-photo.jpg';
+    const data = await response.json();
+    console.log("Дані про пацієнта, отримані з сервера:", data);
 
-    // Виводимо медичну картку (якщо вона є)
-    if (data.medicalRecord) {
-      document.getElementById('patientDiagnosis').textContent = data.medicalRecord.diagnosis || 'Не вказано';
-      document.getElementById('patientTreatment').textContent = data.medicalRecord.treatment || 'Не вказано';
+    if (response.ok) {
+      // Оновлюємо дані пацієнта на сторінці
+      document.getElementById('patientName').textContent = data.patient.fullName;
+      document.getElementById('patientEmail').textContent = data.patient.email;
+      document.getElementById('patientPhone').textContent = data.patient.phone || 'Не вказано';
+      document.getElementById('patientPhoto').src = data.patient.photo || '/default-photo.jpg';
+
+      // Виводимо медичну картку пацієнта
+      if (data.medicalRecords && data.medicalRecords.length > 0) {
+        renderMedicalRecords(data.medicalRecords);
+        medicalRecordsLoaded = true; // Флаг, що показує, що таблиця вже заповнена
+      } else {
+        document.getElementById('noMedicalRecordsMessage').style.display = 'block';
+      }
     } else {
-      document.getElementById('patientDiagnosis').textContent = 'Медична картка не знайдена';
-      document.getElementById('patientTreatment').textContent = '';
-      // Покажемо форму для створення медичної картки
-      document.getElementById('createMedicalRecordForm').style.display = 'block';
+      alert(data.message || 'Щось пішло не так');
     }
-  } else {
-    alert(data.message || 'Щось пішло не так');
+  } catch (error) {
+    console.error('Помилка під час отримання інформації про пацієнта:', error);
   }
-};
+}
 
 // Створення медичної картки
 const createMedicalRecord = async () => {
@@ -52,29 +60,98 @@ const createMedicalRecord = async () => {
   const healthComplaints = document.getElementById('healthComplaints').value;
   const vaccinations = document.getElementById('vaccinations').value;
 
-  const response = await fetch(`/api/doctor/patient/${patientId}/medical-record`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      diagnoses: diagnosis,
-      treatments: treatment,
-      surgeries: surgery,
-      healthComplaints: healthComplaints,
-      vaccinations: vaccinations
-    })
-  });
+  try {
+    const response = await fetch(`/api/doctor/patient/${patientId}/medical-record`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        diagnoses: diagnosis,
+        treatments: treatment,
+        surgeries: surgery,
+        healthComplaints: healthComplaints,
+        vaccinations: vaccinations
+      })
+    });
 
-  const data = await response.json();
-  if (response.ok) {
-    alert('Медичну картку успішно створено');
-    window.location.reload();
-  } else {
-    alert(data.message || 'Щось пішло не так');
+    const data = await response.json();
+    if (response.ok) {
+      alert('Медичну картку успішно додано');
+
+      // Оновлюємо таблицю після додавання нового запису
+      await loadPatientData();
+
+      // Очищуємо форму після додавання
+      clearMedicalRecordForm();
+    } else {
+      alert(data.message || 'Щось пішло не так');
+    }
+  } catch (error) {
+    console.error('Помилка при створенні медичної картки:', error);
   }
 };
 
-// Додаємо обробник для форми
+// Функція для рендеру всіх медичних записів при завантаженні сторінки або оновленні
+function renderMedicalRecords(medicalRecords) {
+  const tableBody = document.getElementById('medicalRecordsTableBody');
+  tableBody.innerHTML = ''; // Очищаємо таблицю перед оновленням
+
+  // Додаємо всі записи до таблиці
+  medicalRecords.forEach(record => {
+    const rows = createMedicalRecordRows(record);
+    rows.forEach(row => tableBody.appendChild(row));
+  });
+}
+
+// Функція для створення HTML рядків таблиці медичної картки
+function createMedicalRecordRows(record) {
+  const rows = [];
+
+  // Перебираємо всі значення масивів та створюємо окремий рядок для кожного запису
+  const length = Math.max(
+    record.diagnoses.length,
+    record.treatments.length,
+    record.surgeries.length,
+    record.healthComplaints.length,
+    record.vaccinations.length,
+    record.doctorComments.length
+  );
+
+  for (let i = 0; i < length; i++) {
+    const row = document.createElement('tr');
+
+    const diagnosis = record.diagnoses[i] || 'Не вказано';
+    const treatment = record.treatments[i] || 'Не вказано';
+    const surgery = record.surgeries[i] || 'Не вказано';
+    const healthComplaint = record.healthComplaints[i] || 'Не вказано';
+    const vaccination = record.vaccinations[i] || 'Не вказано';
+    const doctorComment = record.doctorComments[i] || 'Не вказано';
+
+    row.innerHTML = `
+      <td>${diagnosis}</td>
+      <td>${treatment}</td>
+      <td>${surgery}</td>
+      <td>${healthComplaint}</td>
+      <td>${vaccination}</td>
+      <td>${doctorComment}</td>
+    `;
+
+    rows.push(row);
+  }
+
+  return rows;
+}
+
+// Очищення форми після додавання медичної картки
+function clearMedicalRecordForm() {
+  document.getElementById('diagnosis').value = '';
+  document.getElementById('treatment').value = '';
+  document.getElementById('surgery').value = '';
+  document.getElementById('healthComplaints').value = '';
+  document.getElementById('vaccinations').value = '';
+}
+
+// Додаємо обробник для кнопки створення медичної картки
 document.getElementById('createMedicalRecordButton').addEventListener('click', createMedicalRecord);

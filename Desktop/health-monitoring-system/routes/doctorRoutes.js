@@ -4,6 +4,7 @@ const doctorController = require('../controllers/doctorController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const router = express.Router();
 
+
 router.get('/patient/:id', authMiddleware.verifyToken, doctorController.viewPatientProfile);
 
 router.get('/dashboard', authMiddleware.verifyToken, doctorController.dashboard);

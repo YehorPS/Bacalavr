@@ -4,41 +4,88 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Профіль пацієнта</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/patient.css">
 </head>
 <body>
-  <h1>Профіль пацієнта</h1>
-  
-  <div>
-    <p><strong>ПІБ:</strong> <span id="patientName"></span></p>
-    <p><strong>Email:</strong> <span id="patientEmail"></span></p>
-    <p><strong>Телефон:</strong> <span id="patientPhone"></span></p>
-    <img id="patientPhoto" alt="Фото пацієнта" width="150" height="150" />
-  
-    <h2>Медична картка</h2>
-    <p><strong>Діагноз:</strong> <span id="patientDiagnosis"></span></p>
-    <p><strong>Лікування:</strong> <span id="patientTreatment"></span></p>
+  <div class="container mt-5">
+    <h1 class="text-center">Профіль пацієнта</h1>
+    
+    <div class="card mt-4">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-4">
+            <img id="patientPhoto" class="img-fluid rounded" alt="Фото пацієнта" />
+          </div>
+          <div class="col-md-8">
+            <p><strong>ПІБ:</strong> <span id="patientName"></span></p>
+            <p><strong>Email:</strong> <span id="patientEmail"></span></p>
+            <p><strong>Телефон:</strong> <span id="patientPhone"></span></p>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <!-- Форма для створення медичної картки -->
-<div id="createMedicalRecordForm" style="display: none;">
-  <h2>Створити медичну картку</h2>
-  <label for="diagnosis">Діагноз:</label>
-  <input type="text" id="diagnosis" required />
-  <label for="treatment">Лікування:</label>
-  <input type="text" id="treatment" required />
-  <label for="surgery">Операція:</label>
-  <input type="text" id="surgery" />
-  <label for="healthComplaints">Скарги на здоров'я:</label>
-  <input type="text" id="healthComplaints" />
-  <label for="vaccinations">Вакцинації:</label>
-  <input type="text" id="vaccinations" />
-  <button id="createMedicalRecordButton">Зберегти</button>
-</div>
+    <h2 class="mt-5">Медична картка</h2>
+    <div class="table-responsive">
+      <table id="medicalRecordsTable" class="table table-bordered table-hover mt-3">
+        <thead class="table-dark">
+          <tr>
+            <th>Діагноз</th>
+            <th>Лікування</th>
+            <th>Операції</th>
+            <th>Скарги на здоров'я</th>
+            <th>Вакцинації</th>
+            <th>Ким створено</th>
+          </tr>
+        </thead>
+        <tbody id="medicalRecordsTableBody">
+        </tbody>
+      </table>
+    </div>
+    <p id="noMedicalRecordsMessage" class="text-muted" style="display: none;">Медична картка не знайдена</p>
 
-
-    <button onclick="window.location.href='/dashboard.html'">Назад</button>
+    <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#addRecordModal">Додати новий запис</button>
   </div>
 
+  <!-- Модальне вікно для додавання запису -->
+  <div class="modal fade" id="addRecordModal" tabindex="-1" aria-labelledby="addRecordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addRecordModalLabel">Додати новий запис до медичної картки</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="medicalRecordForm">
+            <div class="mb-3">
+              <label for="diagnosis" class="form-label">Діагноз</label>
+              <input type="text" class="form-control" id="diagnosis" required>
+            </div>
+            <div class="mb-3">
+              <label for="treatment" class="form-label">Лікування</label>
+              <input type="text" class="form-control" id="treatment" required>
+            </div>
+            <div class="mb-3">
+              <label for="surgery" class="form-label">Операції</label>
+              <input type="text" class="form-control" id="surgery">
+            </div>
+            <div class="mb-3">
+              <label for="healthComplaints" class="form-label">Скарги на здоров'я</label>
+              <input type="text" class="form-control" id="healthComplaints">
+            </div>
+            <div class="mb-3">
+              <label for="vaccinations" class="form-label">Вакцинації</label>
+              <input type="text" class="form-control" id="vaccinations">
+            </div>
+            <button type="button" class="btn btn-success" id="createMedicalRecordButton">Додати запис</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/profile.js"></script>
 </body>
 </html>

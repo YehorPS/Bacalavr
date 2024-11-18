@@ -1,10 +1,24 @@
-// routes/patientRoutes.js
 const express = require('express');
-const router = express.Router();
-const patientController = require('../controllers/patientController');
-const authMiddleware = require('../middlewares/authMiddleware');
+const multer = require('multer');
+const { getPatientProfile, createPatientProfile, updatePatientProfile } = require('../controllers/patientController');
+const { verifyToken } = require('../middlewares/authMiddleware');
 
-// Маршрут для отримання інформації про пацієнта
-router.get('/dashboard', authMiddleware.verifyToken, patientController.getPatientDashboard);
-router.post('/update-profile', authMiddleware.verifyToken, patientController.updateProfile);
+const router = express.Router();
+
+// Налаштування для multer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/'); // Вказуємо директорію для збереження файлів
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  }
+});
+const upload = multer({ storage });
+
+// Маршрути
+router.get('/patient-profile', verifyToken, getPatientProfile);
+router.post('/create-profile', verifyToken, upload.single('photo'), createPatientProfile);
+router.put('/update-profile', verifyToken, upload.single('photo'), updatePatientProfile);
+
 module.exports = router;
