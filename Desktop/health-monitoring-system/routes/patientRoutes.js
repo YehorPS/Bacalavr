@@ -1,8 +1,10 @@
 // routes/patientRoutes.js
 const express = require('express');
-const patientController = require('../controllers/patientController');
 const router = express.Router();
+const patientController = require('../controllers/patientController');
+const authMiddleware = require('../middlewares/authMiddleware');
 
-// Маршрути для функцій пацієнта будуть додані пізніше
-
+// Маршрут для отримання інформації про пацієнта
+router.get('/dashboard', authMiddleware.verifyToken, patientController.getPatientDashboard);
+router.post('/update-profile', authMiddleware.verifyToken, patientController.updateProfile);
 module.exports = router;

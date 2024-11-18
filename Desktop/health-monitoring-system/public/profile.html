@@ -1,27 +1,44 @@
-<!-- public/profile.html -->
 <!DOCTYPE html>
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Профіль пацієнта</title>
-  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/patient.css">
 </head>
 <body>
-  <div class="profile-container">
-    <h1>Профіль пацієнта</h1>
+  <h1>Профіль пацієнта</h1>
+  
+  <div>
+    <p><strong>ПІБ:</strong> <span id="patientName"></span></p>
+    <p><strong>Email:</strong> <span id="patientEmail"></span></p>
+    <p><strong>Телефон:</strong> <span id="patientPhone"></span></p>
+    <img id="patientPhoto" alt="Фото пацієнта" width="150" height="150" />
+  
+    <h2>Медична картка</h2>
+    <p><strong>Діагноз:</strong> <span id="patientDiagnosis"></span></p>
+    <p><strong>Лікування:</strong> <span id="patientTreatment"></span></p>
 
-    <div id="patientInfo"></div>
-    <h2>Медичні картки</h2>
-    <div id="medicalRecord"></div>
+    <!-- Форма для створення медичної картки -->
+<div id="createMedicalRecordForm" style="display: none;">
+  <h2>Створити медичну картку</h2>
+  <label for="diagnosis">Діагноз:</label>
+  <input type="text" id="diagnosis" required />
+  <label for="treatment">Лікування:</label>
+  <input type="text" id="treatment" required />
+  <label for="surgery">Операція:</label>
+  <input type="text" id="surgery" />
+  <label for="healthComplaints">Скарги на здоров'я:</label>
+  <input type="text" id="healthComplaints" />
+  <label for="vaccinations">Вакцинації:</label>
+  <input type="text" id="vaccinations" />
+  <button id="createMedicalRecordButton">Зберегти</button>
+</div>
 
-    <h3>Додати запис</h3>
-    <form id="addRecordForm">
-      <textarea id="doctorComment" placeholder="Коментар лікаря" required></textarea>
-      <button type="submit">Додати запис</button>
-    </form>
+
+    <button onclick="window.location.href='/dashboard.html'">Назад</button>
   </div>
 
-  <script src="/js/profile.js"></script>
+  <script src="js/profile.js"></script>
 </body>
 </html>

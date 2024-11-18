@@ -80,41 +80,41 @@ window.onload = async () => {
       e.preventDefault();
   
       const email = document.getElementById('editEmail').value;
-      const phone = document.getElementById('editPhone').value;
-      const rank = document.getElementById('editRank').value;
-      const photo = document.getElementById('photoInput').files[0];
-  
-      let photoData = null;
-      if (photo) {
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-          photoData = e.target.result;  // Фото у форматі Base64
-          await updateProfile({ email, phone, rank, photo: photoData });
-        };
-        reader.readAsDataURL(photo); // Читаємо фото
-      } else {
-        await updateProfile({ email, phone, rank, photo: photoData });
-      }
-    });
-  
-    async function updateProfile({ email, phone, rank, photo }) {
-      const res = await fetch('/api/patient/update-profile', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email, phone, rank, photo })
-      });
-  
-      const result = await res.json();
-      if (res.ok) {
-        alert('Профіль успішно оновлено');
-        modal.style.display = 'none';  // Закриваємо модальне вікно після успішного оновлення
-        window.location.reload();  // Перезавантажуємо сторінку для відображення оновлених даних
-      } else {
-        alert(result.message || 'Щось пішло не так');
-      }
-    }
+  const phone = document.getElementById('editPhone').value;
+  const rank = document.getElementById('editRank').value;
+  const photo = document.getElementById('photoInput').files[0];
+
+  let photoData = null;
+  if (photo) {
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+      photoData = e.target.result;  // Фото у форматі Base64
+      await updateProfile({ email, phone, rank, photo: photoData });
+    };
+    reader.readAsDataURL(photo); // Читаємо фото
+  } else {
+    await updateProfile({ email, phone, rank, photo: photoData });
+  }
+});
+
+async function updateProfile({ email, phone, rank, photo }) {
+  const token = localStorage.getItem('authToken');
+  const res = await fetch('/api/patient/update-profile', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ email, phone, rank, photo })
+  });
+
+  const result = await res.json();
+  if (res.ok) {
+    alert('Профіль успішно оновлено');
+    window.location.reload();  // Перезавантажуємо сторінку для відображення оновлених даних
+  } else {
+    alert(result.message || 'Щось пішло не так');
+  }
+}
   };
   

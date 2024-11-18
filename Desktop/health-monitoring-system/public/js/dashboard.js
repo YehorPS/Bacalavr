@@ -59,7 +59,7 @@ window.onload = async () => {
         const li = document.createElement('li');
         li.textContent = `${patient.fullName} (${patient.email})`;
         li.addEventListener('click', () => {
-          window.location.href = `/profile.html?id=${patient._id}`;
+          window.location.href = `/profile.html?id=${patient._id}`; // Передаємо ID пацієнта
         });
         patientsList.appendChild(li);
       });
