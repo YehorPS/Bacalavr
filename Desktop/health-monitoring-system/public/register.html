@@ -1,37 +1,29 @@
-<!-- public/register.html -->
 <!DOCTYPE html>
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Реєстрація</title>
-  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/auth.css">
 </head>
 <body>
-  <div class="form-container">
-    <h1>Реєстрація</h1>
-    <form id="registerForm">
-      <label for="fullName">ПІБ</label>
-      <input type="text" id="fullName" name="fullName" required>
-
-      <label for="email">Email</label>
-      <input type="email" id="email" name="email" required>
-
-      <label for="password">Пароль</label>
-      <input type="password" id="password" name="password" required>
-
-      <label for="role">Роль</label>
-      <select id="role" name="role" required>
+  <div class="container">
+    <form id="registerForm" class="register-form">
+      <h2>Реєстрація</h2>
+      <input type="text" id="fullName" placeholder="Ваше ім'я" required>
+      <input type="email" id="email" placeholder="Введіть email" required>
+      <input type="password" id="password" placeholder="Введіть пароль" required>
+      <input type="password" id="confirmPassword" placeholder="Підтвердіть пароль" required>
+      <label for="role">Виберіть роль:</label>
+      <select id="role" required>
         <option value="doctor">Лікар</option>
         <option value="patient">Пацієнт</option>
-        <option value="admin">Адміністратор</option>
       </select>
-
       <button type="submit">Зареєструватися</button>
+      <div class="error-message" id="registerErrorMessage"></div>
+      <p>Вже маєте акаунт? <a href="/login.html">Увійти</a></p>
     </form>
-    <p>Вже маєте акаунт? <a href="/login.html">Увійти</a></p>
   </div>
-
-  <script src="/js/register.js"></script>
+  <script src="js/register.js"></script>
 </body>
 </html>

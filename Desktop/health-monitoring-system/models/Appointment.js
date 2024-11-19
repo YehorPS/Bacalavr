@@ -1,11 +1,10 @@
-// models/Appointment.js
 const mongoose = require('mongoose');
 
 const appointmentSchema = new mongoose.Schema({
-  doctor: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  patient: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  patientId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Змінив ref на 'User', бо пацієнти зберігаються в моделі User
+  doctorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Змінив ref на 'User', бо лікарі зберігаються в моделі User
   dateTime: { type: Date, required: true },
-  status: { type: String, enum: ['pending', 'confirmed', 'completed'], default: 'pending' },
+  reason: { type: String, required: true }
 });
 
 module.exports = mongoose.model('Appointment', appointmentSchema);

@@ -1,6 +1,6 @@
 
 require('dotenv').config();
-
+const patientRoutes = require('./routes/patientRoutes'); 
 const bodyParser = require('body-parser');
 const authRoutes = require('./routes/authRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
@@ -12,6 +12,7 @@ const mongoose = require('mongoose');
 const doctorRoutes = require('./routes/doctorRoutes');
 
 const app = express();
+app.use(express.static('public')); 
 
 // Встановлення статичних файлів
 app.use(express.static(path.join(__dirname, 'public')));
@@ -50,7 +51,7 @@ app.get('/profile', (req, res) => {
 });
 app.use('/api/doctor', doctorRoutes);
 app.use('/api/auth', authRoutes);
-
+app.use('/api/patient', patientRoutes);
 // Стартуємо сервер
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

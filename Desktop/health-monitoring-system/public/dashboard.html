@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Кабінет Лікаря</title>
   <link rel="stylesheet" href="/css/dashboard.css">
+  <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
 </head>
 <body>
   <div class="container">
@@ -26,6 +27,22 @@
 
     <button onclick="window.location.href='/login.html'">Вихід</button>
   </div>
+  <div id="calendar"></div>
+<!-- Модальне вікно для інформації про запис -->
+<div id="appointmentModal" class="modal">
+  <div class="modal-content">
+    <span id="appointmentCloseBtn" class="close-btn">&times;</span>
+    <div class="appointment-info">
+      <img id="appointmentPhoto" class="appointment-photo" src="/default-photo.jpg" alt="Фото пацієнта">
+      <h2 id="appointmentPatientName">Ім'я пацієнта</h2>
+      <p id="appointmentPhone">Телефон: (номер телефону)</p>
+      <p id="appointmentReason">Причина: (причина запису)</p>
+    </div>
+  </div>
+</div>
+
+
+
 
   <!-- Модальне вікно для редагування профілю -->
   <div id="editProfileModal" class="modal">
@@ -45,7 +62,9 @@
       </form>
     </div>
   </div>
-
+  
+  <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+  
   <script src="js/dashboard.js"></script>
 </body>
 </html>
